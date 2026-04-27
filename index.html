@@ -359,7 +359,6 @@
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.7);
             z-index: 1000;
             align-items: center;
             justify-content: center;
@@ -371,11 +370,17 @@
             animation: fadeIn 0.2s ease forwards;
         }
 
-        .modal-overlay.open .modal {
-            animation: slideUp 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 0;
+            cursor: pointer;
         }
 
         .modal {
+            position: relative;
+            z-index: 1;
             background: #1e293b;
             border: 1px solid #334155;
             border-radius: 14px;
@@ -384,6 +389,10 @@
             max-height: 90vh;
             overflow-y: auto;
             box-shadow: 0 40px 80px -12px rgba(0,0,0,0.8);
+        }
+
+        .modal-overlay.open .modal {
+            animation: slideUp 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
         }
 
         .modal-header {
@@ -735,7 +744,8 @@
 </div>
 
 <!-- How To Modal -->
-<div class="modal-overlay" id="howto-modal" onclick="if(event.target===this) closeModal()">
+<div class="modal-overlay" id="howto-modal">
+    <div class="modal-backdrop" onclick="closeModal()"></div>
     <div class="modal">
         <div class="modal-header">
             <h2>How to add your signature to Gmail</h2>
