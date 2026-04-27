@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>TD Signature Configurator</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        * { box-sizing: border-box; }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #2d3f55; border-radius: 6px; }
+        ::-webkit-scrollbar-thumb:hover { background: #38bdf8; }
+        * { scrollbar-color: #2d3f55 #0f172a; scrollbar-width: thin; }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: 290px;
+            background-color: #1e293b;
+            padding: 24px 20px;
+            overflow-y: auto;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-left  { border-right: 1px solid #334155; box-shadow:  4px 0 20px rgba(0,0,0,0.3); }
+        .sidebar-right { border-left:  1px solid #334155; box-shadow: -4px 0 20px rgba(0,0,0,0.3); }
+
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            background: radial-gradient(ellipse at 50% 40%, #1a2e44 0%, #0f172a 70%);
+            overflow: auto;
+        }
+
+        /* Section titles */
+        .section-title {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: #475569;
+            margin: 0 0 12px 0;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #2d3f55;
+        }
+
+        .sidebar-section { margin-bottom: 24px; }
+
+        /* Text inputs */
+        .form-group { margin-bottom: 12px; }
+
+        label {
+            display: block;
+            font-size: 11px;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        input[type="text"],
+        input[type="email"] {
+            width: 100%;
+            padding: 9px 11px;
+            background-color: #0f172a;
+            border: 1px solid #2d3f55;
+            border-radius: 6px;
+            color: #e2e8f0;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            transition: border-color 0.18s, box-shadow 0.18s;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus {
+            outline: none;
+            border-color: #38bdf8;
+            box-shadow: 0 0 0 3px rgba(56,189,248,0.12);
+        }
+
+        /* Toggle groups */
+        .toggle-group {
+            margin-bottom: 14px;
+        }
+
+        .toggle-group-label {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: #38bdf8;
+            margin: 0 0 2px 10px;
+        }
+
+        /* Toggle rows */
+        .toggle-list { display: flex; flex-direction: column; gap: 2px; }
+
+        .toggle-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 9px 10px;
+            border-radius: 7px;
+            transition: background 0.15s;
+        }
+
+        .toggle-row:hover { background: rgba(255,255,255,0.04); }
+
+        .toggle-label {
+            font-size: 13px;
+            font-weight: 500;
+            color: #cbd5e1;
+            user-select: none;
+        }
+
+        /* CSS toggle switch */
+        .toggle-switch {
+            position: relative;
+            width: 38px;
+            height: 21px;
+            flex-shrink: 0;
+            cursor: pointer;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+            position: absolute;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            inset: 0;
+            background-color: #2d3f55;
+            border-radius: 21px;
+            transition: background-color 0.2s;
+        }
+
+        .toggle-slider::before {
+            content: '';
+            position: absolute;
+            height: 15px;
+            width: 15px;
+            left: 3px;
+            top: 3px;
+            background-color: #64748b;
+            border-radius: 50%;
+            transition: transform 0.2s, background-color 0.2s;
+        }
+
+        .toggle-switch input:checked + .toggle-slider { background-color: #0ea5e9; }
+        .toggle-switch input:checked + .toggle-slider::before {
+            transform: translateX(17px);
+            background-color: #fff;
+        }
+
+        /* Preview card */
+        .preview-card {
+            background-color: #fff;
+            padding: 36px;
+            border-radius: 12px;
+            box-shadow: 0 30px 60px -12px rgba(0,0,0,0.65);
+            max-width: 100%;
+            overflow-x: auto;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #0ea5e9;
+            color: white;
+            border: none;
+            padding: 12px 26px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 24px;
+            transition: all 0.18s;
+            box-shadow: 0 4px 14px rgba(14,165,233,0.35);
+            font-family: 'Inter', sans-serif;
+            letter-spacing: 0.01em;
+        }
+
+        .btn:hover {
+            background-color: #0284c7;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(14,165,233,0.45);
+        }
+
+        .btn:active { transform: translateY(0); }
+
+        .copy-feedback {
+            opacity: 0;
+            margin-top: 10px;
+            color: #34d399;
+            font-size: 13px;
+            font-weight: 500;
+            transition: opacity 0.3s ease;
+        }
+
+        /* Right sidebar grouped link cards */
+        .link-card {
+            background: #162032;
+            border: 1px solid #2d3f55;
+            border-radius: 8px;
+            padding: 13px 13px 5px;
+            margin-bottom: 10px;
+        }
+
+        .link-card-title {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: #38bdf8;
+            margin: 0 0 10px 0;
+        }
+
+        .link-card .form-group { margin-bottom: 8px; }
+        .link-card .form-group:last-child { margin-bottom: 8px; }
+
+        .sidebar-hint {
+            margin-top: auto;
+            padding-top: 16px;
+            font-size: 11px;
+            color: #3d5166;
+            line-height: 1.65;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Left Sidebar: Details + Visibility -->
+<div class="sidebar sidebar-left">
+
+    <div class="sidebar-section">
+        <p class="section-title">Details</p>
+        <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" id="input-name" value="Franz Mozar">
+        </div>
+        <div class="form-group">
+            <label>Job Title / Role</label>
+            <input type="text" id="input-role" value="Web Developer">
+        </div>
+        <div class="form-group">
+            <label>Phone Number</label>
+            <input type="text" id="input-phone" value="0412 526 632">
+        </div>
+        <div class="form-group">
+            <label>Email Address</label>
+            <input type="email" id="input-email" value="franz@trusteddigital.com.au">
+        </div>
+        <div class="form-group">
+            <label>Photo URL</label>
+            <input type="text" id="input-photo" value="https://withfranz.com/wp-content/uploads/2026/03/employee-photo.png">
+        </div>
+    </div>
+
+    <div class="sidebar-section">
+        <p class="section-title">Visibility</p>
+
+        <div class="toggle-group">
+            <p class="toggle-group-label">Profile</p>
+            <div class="toggle-list">
+                <div class="toggle-row">
+                    <span class="toggle-label">Photo</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="toggle-photo" checked onchange="toggleElement('photo')">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="toggle-group">
+            <p class="toggle-group-label">Contact</p>
+            <div class="toggle-list">
+                <div class="toggle-row">
+                    <span class="toggle-label">Phone</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="toggle-phone" checked onchange="toggleElement('phone')">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="toggle-row">
+                    <span class="toggle-label">Email</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="toggle-email" checked onchange="toggleElement('email')">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="toggle-row">
+                    <span class="toggle-label">Website</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="toggle-website" checked onchange="toggleElement('website')">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="toggle-row">
+                    <span class="toggle-label">Location</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="toggle-location" checked onchange="toggleElement('location')">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="toggle-group">
+            <p class="toggle-group-label">Social</p>
+            <div class="toggle-list">
+                <div class="toggle-row">
+                    <span class="toggle-label">Facebook</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="toggle-facebook" checked onchange="toggleElement('facebook')">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="toggle-row">
+                    <span class="toggle-label">Instagram</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="toggle-instagram" checked onchange="toggleElement('instagram')">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="toggle-row">
+                    <span class="toggle-label">X (Twitter)</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="toggle-x" checked onchange="toggleElement('x')">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="toggle-row">
+                    <span class="toggle-label">LinkedIn</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="toggle-linkedin" checked onchange="toggleElement('linkedin')">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="toggle-group" style="margin-bottom: 0;">
+            <p class="toggle-group-label">Branding</p>
+            <div class="toggle-list">
+                <div class="toggle-row">
+                    <span class="toggle-label">Brand Sidebar</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="toggle-sidebar" checked onchange="toggleElement('sidebar')">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <p class="sidebar-hint">Edit fields for a live preview. Use toggles to show or hide elements. Hit "Copy Signature" then paste into Gmail or Outlook.</p>
+
+</div>
+
+<!-- Main: Signature Preview -->
+<div class="main">
+    <div class="preview-card" id="signature-container">
+        <!-- BEGIN: SIGNATURE HTML TEMPLATE -->
+        <table cellpadding="0" cellspacing="0" border="0" width="700" bgcolor="#fdfcfa"
+            style="font-family: Arial, sans-serif; max-width: 700px; border-collapse: collapse; background-color: #fdfcfa;">
+            <tr>
+              <td width="500" valign="middle" style="padding: 20px 0px 20px 20px;">
+                <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                  <tr>
+                    <td id="sig-photo-cell" width="170" align="left" valign="middle">
+                      <img id="sig-photo" src="https://withfranz.com/wp-content/uploads/2026/03/employee-photo.png" width="160"
+                        alt="Profile Photo" style="display: block; max-width: 160px; border: 0;" />
+                    </td>
+                    <td valign="middle" style="padding-left: 10px;">
+                      <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                        <tr>
+                          <td style="padding-bottom: 15px; vertical-align: middle;">
+                            <span id="sig-name"
+                              style="font-family: Verdana, sans-serif; font-size: 28px; font-weight: bold; color: #023F40; display: block; padding-bottom: 5px; letter-spacing: -0.01em;">Franz Mozar</span>
+                            <span id="sig-role"
+                              style="font-family: Arial, sans-serif; font-size: 16px; color: #999999; font-weight: normal; display: block;">Web Developer</span>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <table cellpadding="0" cellspacing="0" border="0">
+                              <tr id="sig-row-phone">
+                                <td width="26" align="center" valign="middle" style="padding-bottom: 10px;">
+                                  <img id="sig-phone-icon" src="https://withfranz.com/wp-content/uploads/2026/03/phone.svg" width="16" alt=""
+                                    style="display: block; max-width: 16px; border: 0;" />
+                                </td>
+                                <td valign="middle"
+                                  style="font-family: Arial, sans-serif; font-size: 14px; color: #666666; padding-bottom: 10px; padding-left: 5px;">
+                                  <a id="sig-phone" href="tel:0412526632"
+                                    style="font-family: Arial, sans-serif; color: #666666 !important; text-decoration: none !important;">0412 526 632</a>
+                                </td>
+                              </tr>
+                              <tr id="sig-row-email">
+                                <td width="26" align="center" valign="middle" style="padding-bottom: 10px;">
+                                  <img id="sig-email-icon" src="https://withfranz.com/wp-content/uploads/2026/03/envelope.svg" width="16" alt=""
+                                    style="display: block; max-width: 16px; border: 0;" />
+                                </td>
+                                <td valign="middle"
+                                  style="font-family: Arial, sans-serif; font-size: 14px; color: #666666; padding-bottom: 10px; padding-left: 5px;">
+                                  <a id="sig-email" href="mailto:franz@trusteddigital.com.au"
+                                    style="font-family: Arial, sans-serif; color: #666666 !important; text-decoration: none !important;">franz@trusteddigital.com.au</a>
+                                </td>
+                              </tr>
+                              <tr id="sig-row-website">
+                                <td width="26" align="center" valign="middle" style="padding-bottom: 10px;">
+                                  <img id="sig-web-icon" src="https://withfranz.com/wp-content/uploads/2026/03/web.svg" width="16" alt=""
+                                    style="display: block; max-width: 16px; border: 0;" />
+                                </td>
+                                <td valign="middle"
+                                  style="font-family: Arial, sans-serif; font-size: 14px; color: #666666; padding-bottom: 10px; padding-left: 5px;">
+                                  <a href="https://www.trusteddigital.com.au"
+                                    style="font-family: Arial, sans-serif; color: #666666 !important; text-decoration: none !important;">www.trusteddigital.com.au</a>
+                                </td>
+                              </tr>
+                              <tr id="sig-row-location">
+                                <td width="26" align="center" valign="middle" style="padding-bottom: 10px;">
+                                  <img id="sig-location-icon" src="https://withfranz.com/wp-content/uploads/2026/03/map-pin.svg" width="12" alt=""
+                                    style="display: block; max-width: 12px; border: 0;" />
+                                </td>
+                                <td valign="middle"
+                                  style="font-family: Arial, sans-serif; font-size: 14px; color: #666666; padding-bottom: 10px; padding-left: 5px;">
+                                  Australia
+                                </td>
+                              </tr>
+                            </table>
+                          </td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+              <td id="sig-sidebar" width="200" align="center" valign="middle" bgcolor="#07393c"
+                background="https://withfranz.com/wp-content/uploads/2026/03/dots.svg"
+                style="background-color: #07393c; background-image: url('https://withfranz.com/wp-content/uploads/2026/03/dots.svg'); padding: 20px;">
+                <a id="sig-logo-link" href="https://www.trusteddigital.com.au" style="display: inline-block; padding-bottom: 20px;">
+                  <img id="sig-logo" src="https://withfranz.com/wp-content/uploads/2026/03/TD-Logo.svg" width="115" alt="Trusted Digital"
+                    style="display: block; max-width: 115px; border: 0;" />
+                </a>
+                <table id="sig-row-social" cellpadding="0" cellspacing="0" border="0" align="center">
+                  <tr>
+                    <td id="sig-cell-facebook" width="30" align="center">
+                      <a href="#"><img id="sig-facebook-icon" src="https://withfranz.com/wp-content/uploads/2026/03/facebook.svg" width="22"
+                          alt="Facebook" style="display: block; max-width: 22px; border: 0;" /></a>
+                    </td>
+                    <td id="sig-cell-instagram" width="30" align="center">
+                      <a href="#"><img id="sig-instagram-icon" src="https://withfranz.com/wp-content/uploads/2026/03/instagram.svg" width="22"
+                          alt="Instagram" style="display: block; max-width: 22px; border: 0;" /></a>
+                    </td>
+                    <td id="sig-cell-x" width="30" align="center">
+                      <a href="#"><img id="sig-x-icon" src="https://withfranz.com/wp-content/uploads/2026/03/x.svg" width="22" alt="X"
+                          style="display: block; max-width: 22px; border: 0;" /></a>
+                    </td>
+                    <td id="sig-cell-linkedin" width="30" align="center">
+                      <a href="#"><img id="sig-linkedin-icon" src="https://withfranz.com/wp-content/uploads/2026/03/linkedin.svg" width="22"
+                          alt="LinkedIn" style="display: block; max-width: 22px; border: 0;" /></a>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+        </table>
+        <!-- END: SIGNATURE HTML TEMPLATE -->
+    </div>
+
+    <button class="btn" onclick="copySignature()">
+        <svg style="width:16px;height:16px;margin-right:7px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+        </svg>
+        Copy Signature to Clipboard
+    </button>
+    <div class="copy-feedback" id="copy-feedback">Signature copied — paste it into Gmail or Outlook.</div>
+</div>
+
+<!-- Right Sidebar: Links -->
+<div class="sidebar sidebar-right">
+
+    <div class="sidebar-section">
+        <p class="section-title">Links</p>
+
+        <div class="link-card">
+            <p class="link-card-title">Branding</p>
+            <div class="form-group">
+                <label>Logo</label>
+                <input type="text" id="input-logo" value="https://withfranz.com/wp-content/uploads/2026/03/TD-Logo.svg">
+            </div>
+            <div class="form-group">
+                <label>BG Pattern</label>
+                <input type="text" id="input-bg-pattern" value="https://withfranz.com/wp-content/uploads/2026/03/dots.svg">
+            </div>
+        </div>
+
+        <div class="link-card">
+            <p class="link-card-title">Contact Icons</p>
+            <div class="form-group">
+                <label>Phone</label>
+                <input type="text" id="input-phone-icon" value="https://withfranz.com/wp-content/uploads/2026/03/phone.svg">
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="text" id="input-email-icon" value="https://withfranz.com/wp-content/uploads/2026/03/envelope.svg">
+            </div>
+            <div class="form-group">
+                <label>Website</label>
+                <input type="text" id="input-web-icon" value="https://withfranz.com/wp-content/uploads/2026/03/web.svg">
+            </div>
+            <div class="form-group">
+                <label>Location</label>
+                <input type="text" id="input-location-icon" value="https://withfranz.com/wp-content/uploads/2026/03/map-pin.svg">
+            </div>
+        </div>
+
+        <div class="link-card">
+            <p class="link-card-title">Social Icons</p>
+            <div class="form-group">
+                <label>Facebook</label>
+                <input type="text" id="input-facebook-icon" value="https://withfranz.com/wp-content/uploads/2026/03/facebook.svg">
+            </div>
+            <div class="form-group">
+                <label>Instagram</label>
+                <input type="text" id="input-instagram-icon" value="https://withfranz.com/wp-content/uploads/2026/03/instagram.svg">
+            </div>
+            <div class="form-group">
+                <label>X (Twitter)</label>
+                <input type="text" id="input-x-icon" value="https://withfranz.com/wp-content/uploads/2026/03/x.svg">
+            </div>
+            <div class="form-group">
+                <label>LinkedIn</label>
+                <input type="text" id="input-linkedin-icon" value="https://withfranz.com/wp-content/uploads/2026/03/linkedin.svg">
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    const inputs = {
+        name:          document.getElementById('input-name'),
+        role:          document.getElementById('input-role'),
+        phone:         document.getElementById('input-phone'),
+        email:         document.getElementById('input-email'),
+        photo:         document.getElementById('input-photo'),
+        phoneIcon:     document.getElementById('input-phone-icon'),
+        emailIcon:     document.getElementById('input-email-icon'),
+        webIcon:       document.getElementById('input-web-icon'),
+        locationIcon:  document.getElementById('input-location-icon'),
+        bgPattern:     document.getElementById('input-bg-pattern'),
+        logo:          document.getElementById('input-logo'),
+        facebookIcon:  document.getElementById('input-facebook-icon'),
+        instagramIcon: document.getElementById('input-instagram-icon'),
+        xIcon:         document.getElementById('input-x-icon'),
+        linkedinIcon:  document.getElementById('input-linkedin-icon')
+    };
+
+    const els = {
+        name:          document.getElementById('sig-name'),
+        role:          document.getElementById('sig-role'),
+        phone:         document.getElementById('sig-phone'),
+        email:         document.getElementById('sig-email'),
+        photo:         document.getElementById('sig-photo'),
+        photoCell:     document.getElementById('sig-photo-cell'),
+        phoneIcon:     document.getElementById('sig-phone-icon'),
+        emailIcon:     document.getElementById('sig-email-icon'),
+        webIcon:       document.getElementById('sig-web-icon'),
+        locationIcon:  document.getElementById('sig-location-icon'),
+        sidebar:       document.getElementById('sig-sidebar'),
+        logo:          document.getElementById('sig-logo'),
+        facebookIcon:  document.getElementById('sig-facebook-icon'),
+        instagramIcon: document.getElementById('sig-instagram-icon'),
+        xIcon:         document.getElementById('sig-x-icon'),
+        linkedinIcon:  document.getElementById('sig-linkedin-icon'),
+        rowPhone:      document.getElementById('sig-row-phone'),
+        rowEmail:      document.getElementById('sig-row-email'),
+        rowWebsite:    document.getElementById('sig-row-website'),
+        rowLocation:   document.getElementById('sig-row-location'),
+        cellFacebook:  document.getElementById('sig-cell-facebook'),
+        cellInstagram: document.getElementById('sig-cell-instagram'),
+        cellX:         document.getElementById('sig-cell-x'),
+        cellLinkedin:  document.getElementById('sig-cell-linkedin'),
+        logoLink:      document.getElementById('sig-logo-link')
+    };
+
+    function updateSignature() {
+        els.name.innerText  = inputs.name.value;
+        els.role.innerText  = inputs.role.value;
+
+        els.phone.innerText = inputs.phone.value;
+        els.phone.href      = 'tel:' + inputs.phone.value.replace(/[^0-9+]/g, '');
+
+        els.email.innerText = inputs.email.value;
+        els.email.href      = 'mailto:' + inputs.email.value;
+
+        els.photo.src         = inputs.photo.value;
+        els.phoneIcon.src     = inputs.phoneIcon.value;
+        els.emailIcon.src     = inputs.emailIcon.value;
+        els.webIcon.src       = inputs.webIcon.value;
+        els.locationIcon.src  = inputs.locationIcon.value;
+        els.logo.src          = inputs.logo.value;
+        els.facebookIcon.src  = inputs.facebookIcon.value;
+        els.instagramIcon.src = inputs.instagramIcon.value;
+        els.xIcon.src         = inputs.xIcon.value;
+        els.linkedinIcon.src  = inputs.linkedinIcon.value;
+
+        els.sidebar.setAttribute('background', inputs.bgPattern.value);
+        els.sidebar.style.backgroundImage = "url('" + inputs.bgPattern.value + "')";
+    }
+
+    function updateLogoPadding() {
+        const allHidden = [els.cellFacebook, els.cellInstagram, els.cellX, els.cellLinkedin]
+            .every(cell => cell.style.display === 'none');
+        els.logoLink.style.paddingBottom = allHidden ? '0' : '20px';
+    }
+
+    function toggleElement(key) {
+        const show = document.getElementById('toggle-' + key).checked;
+        const map  = {
+            photo:   () => { els.photoCell.style.display   = show ? '' : 'none'; },
+            phone:   () => { els.rowPhone.style.display    = show ? '' : 'none'; },
+            email:   () => { els.rowEmail.style.display    = show ? '' : 'none'; },
+            website: () => { els.rowWebsite.style.display  = show ? '' : 'none'; },
+            location:() => { els.rowLocation.style.display = show ? '' : 'none'; },
+            facebook:  () => { els.cellFacebook.style.display  = show ? '' : 'none'; updateLogoPadding(); },
+            instagram: () => { els.cellInstagram.style.display = show ? '' : 'none'; updateLogoPadding(); },
+            x:         () => { els.cellX.style.display         = show ? '' : 'none'; updateLogoPadding(); },
+            linkedin:  () => { els.cellLinkedin.style.display  = show ? '' : 'none'; updateLogoPadding(); },
+            sidebar: () => { els.sidebar.style.display     = show ? '' : 'none'; }
+        };
+        if (map[key]) map[key]();
+    }
+
+    Object.values(inputs).forEach(input => input.addEventListener('input', updateSignature));
+
+    function copySignature() {
+        const table = document.querySelector('#signature-container table');
+        const range = document.createRange();
+        range.selectNode(table);
+
+        const sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+
+        try {
+            document.execCommand('copy');
+            const fb = document.getElementById('copy-feedback');
+            fb.style.opacity = '1';
+            setTimeout(() => { fb.style.opacity = '0'; }, 3000);
+        } catch (err) {
+            alert('Failed to copy automatically. Select the signature manually and press Ctrl+C.');
+        }
+
+        sel.removeAllRanges();
+    }
+</script>
+</body>
+</html>
