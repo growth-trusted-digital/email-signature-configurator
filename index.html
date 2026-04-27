@@ -981,7 +981,7 @@
     const howtoSrc = 'https://www.loom.com/embed/a3771e1b6b964cf2ae15867c3ef3059b';
 
     document.querySelector('.btn-howto').addEventListener('click', function() {
-        if (!howtoIframe.src) howtoIframe.src = howtoSrc;
+        howtoIframe.src = howtoSrc;
         document.getElementById('howto-modal').classList.add('open');
     });
 
