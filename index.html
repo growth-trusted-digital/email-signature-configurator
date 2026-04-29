@@ -464,6 +464,59 @@
 
         .howto-step-text { font-size: 13px; color: #94a3b8; line-height: 1.6; }
         .howto-step-text strong { color: #cbd5e1; font-weight: 600; }
+
+        /* Defaults dialog */
+        .dialog-section { margin-bottom: 18px; }
+        .dialog-section:last-child { margin-bottom: 0; }
+        .dialog-section-title {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: #38bdf8;
+            margin: 0 0 10px 0;
+            padding-bottom: 6px;
+            border-bottom: 1px solid #2d3f55;
+        }
+        .dialog-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px 14px;
+        }
+        .dialog-grid .form-group { margin-bottom: 0; }
+        .dialog-footer {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 14px 24px;
+            border-top: 1px solid #2d3f55;
+        }
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid #334155;
+            color: #cbd5e1;
+            padding: 9px 18px;
+            border-radius: 7px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: background 0.15s;
+        }
+        .btn-secondary:hover { background: #2d3f55; }
+        .btn-primary-sm {
+            background: #0ea5e9;
+            border: 0;
+            color: white;
+            padding: 9px 18px;
+            border-radius: 7px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: background 0.15s;
+        }
+        .btn-primary-sm:hover { background: #0284c7; }
     </style>
 </head>
 <body>
@@ -741,6 +794,10 @@
         <svg style="width:14px;height:14px;margin-right:7px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
         How to add to Gmail
     </button>
+    <button class="btn-howto" id="btn-defaults" style="margin-left: 8px;">
+        <svg style="width:14px;height:14px;margin-right:7px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        Edit Defaults
+    </button>
 </div>
 
 <!-- How To Modal -->
@@ -786,6 +843,72 @@
                     <div class="howto-step-num">7</div>
                     <div class="howto-step-text"><strong>Save changes</strong> — Scroll to the bottom and click <em>Save Changes</em>. Your signature is now live.</div>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Defaults Modal -->
+<div class="modal-overlay" id="defaults-modal">
+    <div class="modal-backdrop" onclick="closeDefaultsModal()"></div>
+    <div class="modal">
+        <div class="modal-header">
+            <h2>Edit Defaults</h2>
+            <button class="modal-close" onclick="closeDefaultsModal()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="dialog-section">
+                <p class="dialog-section-title">Profile</p>
+                <div class="dialog-grid">
+                    <div class="form-group"><label>Full Name</label><input type="text" id="def-name"></div>
+                    <div class="form-group"><label>Job Title / Role</label><input type="text" id="def-role"></div>
+                    <div class="form-group"><label>Phone Number</label><input type="text" id="def-phone"></div>
+                    <div class="form-group"><label>Email Address</label><input type="text" id="def-email"></div>
+                    <div class="form-group" style="grid-column: 1 / -1;"><label>Photo URL</label><input type="text" id="def-photo"></div>
+                </div>
+            </div>
+            <div class="dialog-section">
+                <p class="dialog-section-title">Branding</p>
+                <div class="dialog-grid">
+                    <div class="form-group"><label>Logo URL</label><input type="text" id="def-logo"></div>
+                    <div class="form-group"><label>BG Pattern URL</label><input type="text" id="def-bg-pattern"></div>
+                </div>
+            </div>
+            <div class="dialog-section">
+                <p class="dialog-section-title">Contact Icons</p>
+                <div class="dialog-grid">
+                    <div class="form-group"><label>Phone Icon</label><input type="text" id="def-phone-icon"></div>
+                    <div class="form-group"><label>Email Icon</label><input type="text" id="def-email-icon"></div>
+                    <div class="form-group"><label>Website Icon</label><input type="text" id="def-web-icon"></div>
+                    <div class="form-group"><label>Location Icon</label><input type="text" id="def-location-icon"></div>
+                </div>
+            </div>
+            <div class="dialog-section">
+                <p class="dialog-section-title">Social Icons</p>
+                <div class="dialog-grid">
+                    <div class="form-group"><label>Facebook Icon</label><input type="text" id="def-facebook-icon"></div>
+                    <div class="form-group"><label>Instagram Icon</label><input type="text" id="def-instagram-icon"></div>
+                    <div class="form-group"><label>X Icon</label><input type="text" id="def-x-icon"></div>
+                    <div class="form-group"><label>LinkedIn Icon</label><input type="text" id="def-linkedin-icon"></div>
+                </div>
+            </div>
+            <div class="dialog-section">
+                <p class="dialog-section-title">Social Links</p>
+                <div class="dialog-grid">
+                    <div class="form-group"><label>Facebook URL</label><input type="text" id="def-facebook-url"></div>
+                    <div class="form-group"><label>Instagram URL</label><input type="text" id="def-instagram-url"></div>
+                    <div class="form-group"><label>X URL</label><input type="text" id="def-x-url"></div>
+                    <div class="form-group"><label>LinkedIn URL</label><input type="text" id="def-linkedin-url"></div>
+                </div>
+            </div>
+        </div>
+        <div class="dialog-footer">
+            <button class="btn-secondary" onclick="resetDefaults()">Reset to Original</button>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn-secondary" onclick="closeDefaultsModal()">Cancel</button>
+                <button class="btn-primary-sm" onclick="saveDefaults()">Save Defaults</button>
             </div>
         </div>
     </div>
@@ -1015,6 +1138,83 @@
     function closeModal() {
         document.getElementById('howto-modal').classList.remove('open');
     }
+
+    /* Defaults dialog */
+    const DEFAULTS_KEY = 'td-sig-defaults-v1';
+    const defaultFieldMap = {
+        name: 'input-name',
+        role: 'input-role',
+        phone: 'input-phone',
+        email: 'input-email',
+        photo: 'input-photo',
+        logo: 'input-logo',
+        bgPattern: 'input-bg-pattern',
+        phoneIcon: 'input-phone-icon',
+        emailIcon: 'input-email-icon',
+        webIcon: 'input-web-icon',
+        locationIcon: 'input-location-icon',
+        facebookIcon: 'input-facebook-icon',
+        instagramIcon: 'input-instagram-icon',
+        xIcon: 'input-x-icon',
+        linkedinIcon: 'input-linkedin-icon',
+        facebookUrl: 'input-facebook-url',
+        instagramUrl: 'input-instagram-url',
+        xUrl: 'input-x-url',
+        linkedinUrl: 'input-linkedin-url'
+    };
+    const defaultDialogIds = {
+        name: 'def-name', role: 'def-role', phone: 'def-phone', email: 'def-email', photo: 'def-photo',
+        logo: 'def-logo', bgPattern: 'def-bg-pattern',
+        phoneIcon: 'def-phone-icon', emailIcon: 'def-email-icon', webIcon: 'def-web-icon', locationIcon: 'def-location-icon',
+        facebookIcon: 'def-facebook-icon', instagramIcon: 'def-instagram-icon', xIcon: 'def-x-icon', linkedinIcon: 'def-linkedin-icon',
+        facebookUrl: 'def-facebook-url', instagramUrl: 'def-instagram-url', xUrl: 'def-x-url', linkedinUrl: 'def-linkedin-url'
+    };
+
+    function applyDefaults(data) {
+        Object.keys(data).forEach(k => {
+            const el = document.getElementById(defaultFieldMap[k]);
+            if (el && data[k] != null) el.value = data[k];
+        });
+        updateSignature();
+    }
+
+    function loadSavedDefaults() {
+        try {
+            const raw = localStorage.getItem(DEFAULTS_KEY);
+            if (raw) applyDefaults(JSON.parse(raw));
+        } catch (e) {}
+    }
+
+    function openDefaultsModal() {
+        Object.keys(defaultDialogIds).forEach(k => {
+            const dlg = document.getElementById(defaultDialogIds[k]);
+            const src = document.getElementById(defaultFieldMap[k]);
+            if (dlg && src) dlg.value = src.value;
+        });
+        document.getElementById('defaults-modal').classList.add('open');
+    }
+
+    function closeDefaultsModal() {
+        document.getElementById('defaults-modal').classList.remove('open');
+    }
+
+    function saveDefaults() {
+        const data = {};
+        Object.keys(defaultDialogIds).forEach(k => {
+            data[k] = document.getElementById(defaultDialogIds[k]).value;
+        });
+        try { localStorage.setItem(DEFAULTS_KEY, JSON.stringify(data)); } catch (e) {}
+        applyDefaults(data);
+        closeDefaultsModal();
+    }
+
+    function resetDefaults() {
+        try { localStorage.removeItem(DEFAULTS_KEY); } catch (e) {}
+        location.reload();
+    }
+
+    document.getElementById('btn-defaults').addEventListener('click', openDefaultsModal);
+    loadSavedDefaults();
 
     Object.values(inputs).forEach(input => input.addEventListener('input', updateSignature));
 
