@@ -674,10 +674,10 @@
 <div class="main">
     <div class="preview-card" id="signature-container">
         <!-- BEGIN: SIGNATURE HTML TEMPLATE -->
-        <table cellpadding="0" cellspacing="0" border="0" width="700" bgcolor="#fdfcfa"
-            style="font-family: Arial, sans-serif; max-width: 700px; border-collapse: collapse; background-color: #fdfcfa;">
-            <tr>
-              <td width="500" valign="middle" style="padding: 20px 0px 20px 20px;">
+        <table cellpadding="0" cellspacing="0" border="0" width="700" height="260" bgcolor="#fdfcfa"
+            style="font-family: Arial, sans-serif; max-width: 700px; height: 260px; border-collapse: collapse; background-color: #fdfcfa;">
+            <tr style="height: 260px;">
+              <td width="500" height="260" valign="middle" style="padding: 20px 0px 20px 20px; height: 260px;">
                 <table cellpadding="0" cellspacing="0" border="0" width="100%">
                   <tr>
                     <td id="sig-photo-cell" width="170" align="left" valign="middle">
@@ -748,9 +748,9 @@
                   </tr>
                 </table>
               </td>
-              <td id="sig-sidebar" width="200" align="center" valign="middle" bgcolor="#07393c"
+              <td id="sig-sidebar" width="200" height="260" align="center" valign="middle" bgcolor="#07393c"
                 background="https://withfranz.com/wp-content/uploads/2026/03/dots.svg"
-                style="background-color: #07393c; background-image: url('https://withfranz.com/wp-content/uploads/2026/03/dots.svg'); padding: 20px;">
+                style="background-color: #07393c; background-image: url('https://withfranz.com/wp-content/uploads/2026/03/dots.svg'); padding: 20px; height: 260px;">
                 <a id="sig-logo-link" href="https://www.trusteddigital.com.au" style="display: inline-block; padding-bottom: 20px;">
                   <img id="sig-logo" src="https://withfranz.com/wp-content/uploads/2026/04/TD-Logo-SVG.svg" width="90" alt="Trusted Digital"
                     style="display: block; max-width: 90px; border: 0;" />
@@ -901,6 +901,21 @@
                     <div class="form-group"><label>Instagram URL</label><input type="text" id="def-instagram-url"></div>
                     <div class="form-group"><label>X URL</label><input type="text" id="def-x-url"></div>
                     <div class="form-group"><label>LinkedIn URL</label><input type="text" id="def-linkedin-url"></div>
+                </div>
+            </div>
+            <div class="dialog-section">
+                <p class="dialog-section-title">Default Visibility</p>
+                <div class="dialog-grid">
+                    <div class="toggle-row" style="padding: 6px 0;"><span class="toggle-label">Photo</span><label class="toggle-switch"><input type="checkbox" id="def-toggle-photo" checked><span class="toggle-slider"></span></label></div>
+                    <div class="toggle-row" style="padding: 6px 0;"><span class="toggle-label">Phone</span><label class="toggle-switch"><input type="checkbox" id="def-toggle-phone" checked><span class="toggle-slider"></span></label></div>
+                    <div class="toggle-row" style="padding: 6px 0;"><span class="toggle-label">Email</span><label class="toggle-switch"><input type="checkbox" id="def-toggle-email" checked><span class="toggle-slider"></span></label></div>
+                    <div class="toggle-row" style="padding: 6px 0;"><span class="toggle-label">Website</span><label class="toggle-switch"><input type="checkbox" id="def-toggle-website" checked><span class="toggle-slider"></span></label></div>
+                    <div class="toggle-row" style="padding: 6px 0;"><span class="toggle-label">Location</span><label class="toggle-switch"><input type="checkbox" id="def-toggle-location" checked><span class="toggle-slider"></span></label></div>
+                    <div class="toggle-row" style="padding: 6px 0;"><span class="toggle-label">Facebook</span><label class="toggle-switch"><input type="checkbox" id="def-toggle-facebook" checked><span class="toggle-slider"></span></label></div>
+                    <div class="toggle-row" style="padding: 6px 0;"><span class="toggle-label">Instagram</span><label class="toggle-switch"><input type="checkbox" id="def-toggle-instagram" checked><span class="toggle-slider"></span></label></div>
+                    <div class="toggle-row" style="padding: 6px 0;"><span class="toggle-label">X (Twitter)</span><label class="toggle-switch"><input type="checkbox" id="def-toggle-x" checked><span class="toggle-slider"></span></label></div>
+                    <div class="toggle-row" style="padding: 6px 0;"><span class="toggle-label">LinkedIn</span><label class="toggle-switch"><input type="checkbox" id="def-toggle-linkedin" checked><span class="toggle-slider"></span></label></div>
+                    <div class="toggle-row" style="padding: 6px 0;"><span class="toggle-label">Brand Sidebar</span><label class="toggle-switch"><input type="checkbox" id="def-toggle-sidebar" checked><span class="toggle-slider"></span></label></div>
                 </div>
             </div>
         </div>
@@ -1169,12 +1184,24 @@
         facebookIcon: 'def-facebook-icon', instagramIcon: 'def-instagram-icon', xIcon: 'def-x-icon', linkedinIcon: 'def-linkedin-icon',
         facebookUrl: 'def-facebook-url', instagramUrl: 'def-instagram-url', xUrl: 'def-x-url', linkedinUrl: 'def-linkedin-url'
     };
+    const toggleKeys = ['photo','phone','email','website','location','facebook','instagram','x','linkedin','sidebar'];
 
     function applyDefaults(data) {
         Object.keys(data).forEach(k => {
             const el = document.getElementById(defaultFieldMap[k]);
             if (el && data[k] != null) el.value = data[k];
         });
+        if (data.toggles) {
+            toggleKeys.forEach(k => {
+                if (typeof data.toggles[k] === 'boolean') {
+                    const cb = document.getElementById('toggle-' + k);
+                    if (cb) {
+                        cb.checked = data.toggles[k];
+                        toggleElement(k);
+                    }
+                }
+            });
+        }
         updateSignature();
     }
 
@@ -1191,6 +1218,11 @@
             const src = document.getElementById(defaultFieldMap[k]);
             if (dlg && src) dlg.value = src.value;
         });
+        toggleKeys.forEach(k => {
+            const dlg = document.getElementById('def-toggle-' + k);
+            const src = document.getElementById('toggle-' + k);
+            if (dlg && src) dlg.checked = src.checked;
+        });
         document.getElementById('defaults-modal').classList.add('open');
     }
 
@@ -1199,9 +1231,12 @@
     }
 
     function saveDefaults() {
-        const data = {};
+        const data = { toggles: {} };
         Object.keys(defaultDialogIds).forEach(k => {
             data[k] = document.getElementById(defaultDialogIds[k]).value;
+        });
+        toggleKeys.forEach(k => {
+            data.toggles[k] = document.getElementById('def-toggle-' + k).checked;
         });
         try { localStorage.setItem(DEFAULTS_KEY, JSON.stringify(data)); } catch (e) {}
         applyDefaults(data);
