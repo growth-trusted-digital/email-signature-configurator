@@ -77,7 +77,8 @@
         }
 
         input[type="text"],
-        input[type="email"] {
+        input[type="email"],
+        input[type="password"] {
             width: 100%;
             padding: 9px 11px;
             background-color: #0f172a;
@@ -919,11 +920,20 @@
                 </div>
             </div>
         </div>
+        <div class="dialog-section" style="padding: 0 24px;">
+            <p class="dialog-section-title">Publish to Live Site</p>
+            <div class="form-group">
+                <label>Admin Password (required to publish)</label>
+                <input type="password" id="def-password" placeholder="Enter admin password" autocomplete="off">
+            </div>
+            <div id="publish-feedback" style="font-size: 12px; margin-top: 4px; min-height: 16px;"></div>
+        </div>
         <div class="dialog-footer">
             <button class="btn-secondary" onclick="resetDefaults()">Reset to Original</button>
             <div style="display: flex; gap: 10px;">
                 <button class="btn-secondary" onclick="closeDefaultsModal()">Cancel</button>
-                <button class="btn-primary-sm" onclick="saveDefaults()">Save Defaults</button>
+                <button class="btn-secondary" onclick="saveDefaults()">Save Local</button>
+                <button class="btn-primary-sm" onclick="publishDefaults()">Publish Live</button>
             </div>
         </div>
     </div>
@@ -1246,6 +1256,50 @@
     function resetDefaults() {
         try { localStorage.removeItem(DEFAULTS_KEY); } catch (e) {}
         location.reload();
+    }
+
+    function buildDefaultsPayload() {
+        const data = { toggles: {} };
+        Object.keys(defaultDialogIds).forEach(k => {
+            data[k] = document.getElementById(defaultDialogIds[k]).value;
+        });
+        toggleKeys.forEach(k => {
+            data.toggles[k] = document.getElementById('def-toggle-' + k).checked;
+        });
+        return data;
+    }
+
+    async function publishDefaults() {
+        const fb = document.getElementById('publish-feedback');
+        const password = document.getElementById('def-password').value;
+        if (!password) {
+            fb.style.color = '#f87171';
+            fb.textContent = 'Password required to publish live.';
+            return;
+        }
+        fb.style.color = '#94a3b8';
+        fb.textContent = 'Publishing… this may take ~30s after commit for Vercel rebuild.';
+        const data = buildDefaultsPayload();
+        try {
+            const r = await fetch('/api/save-defaults', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'x-admin-password': password },
+                body: JSON.stringify(data)
+            });
+            const json = await r.json();
+            if (!r.ok) {
+                fb.style.color = '#f87171';
+                fb.textContent = 'Failed: ' + (json.error || r.status);
+                return;
+            }
+            try { localStorage.setItem(DEFAULTS_KEY, JSON.stringify(data)); } catch (e) {}
+            applyDefaults(data);
+            fb.style.color = '#34d399';
+            fb.textContent = 'Published. Vercel rebuilding (~30s). Commit: ' + (json.commit || 'ok');
+        } catch (err) {
+            fb.style.color = '#f87171';
+            fb.textContent = 'Network error: ' + err.message;
+        }
     }
 
     document.getElementById('btn-defaults').addEventListener('click', openDefaultsModal);
